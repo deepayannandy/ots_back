@@ -25,7 +25,7 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/updateSurvey/:itemId", verifyToken, async (req, res) => {
+router.patch("/updateSurvey/:itemId", async (req, res) => {
   try {
     const selectedSurveyReactor = await surveyReactorModel.findById(
       req.params.itemId
