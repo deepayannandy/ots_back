@@ -25,23 +25,21 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/updateSurvey/:itemId", async (req, res) => {
+router.patch("/updateSurvey", async (req, res) => {
   try {
-    const selectedSurveyReactor = await surveyReactorModel.findById(
-      req.params.itemId
-    );
+    const selectedSurveyReactor = await surveyReactorModel.find();
     if (!selectedSurveyReactor)
       return res.status(404).json({ error: "Reactor not found" });
     console.log(selectedSurveyReactor);
     if (req.body.detection != null) {
       const data = req.body.detection;
       data.timeStamp = new Date();
-      selectedSurveyReactor.data.push(data);
+      selectedSurveyReactor[0].data.push(data);
       console.log(data);
       console.log(selectedSurveyReactor);
     }
 
-    const savedReactor = await selectedSurveyReactor.save();
+    const savedReactor = await selectedSurveyReactor[0].save();
     return res.status(200).json({
       Success: true,
       message: "Reactor Updated",
@@ -62,6 +60,21 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
     return res.status(200).json({
       Success: true,
       data: selectedReactor,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+router.patch("/resetAll", verifyToken, async (req, res) => {
+  try {
+    const selectedReactor = await surveyReactorModel.find();
+    if (!selectedReactor)
+      return res.status(404).json({ error: "Reactor not found" });
+    selectedReactor[0].data = [];
+    await selectedReactor[0].save();
+    return res.status(200).json({
+      Success: true,
+      data: selectedReactor[0],
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
