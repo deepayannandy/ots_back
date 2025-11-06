@@ -34,6 +34,7 @@ router.patch("/updateSurvey", async (req, res) => {
     if (req.body.detection != null) {
       const data = req.body.detection;
       data.timeStamp = new Date();
+      data.tubeId = parseInt(data.tubeId) - 1;
       selectedSurveyReactor[0].data.push(data);
       console.log(data);
       console.log(selectedSurveyReactor);
@@ -52,20 +53,18 @@ router.patch("/updateSurvey", async (req, res) => {
 
 router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await surveyReactorModel.findById(
-      req.params.itemId
-    );
+    const selectedReactor = await surveyReactorModel.find();
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     return res.status(200).json({
       Success: true,
-      data: selectedReactor,
+      data: selectedReactor[0],
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/resetAll", verifyToken, async (req, res) => {
+router.patch("/resetAll", async (req, res) => {
   try {
     const selectedReactor = await surveyReactorModel.find();
     if (!selectedReactor)
