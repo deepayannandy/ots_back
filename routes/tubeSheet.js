@@ -2,15 +2,24 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const mongoose = require("mongoose");
 
 const tubeSheetModel = require("../models/tubeSheetModel");
+const cameraModel = require("../models/cameraModel");
 
 router.post("/createTubeSheet", verifyToken, async (req, res) => {
   try {
     const newTubeSheet = new tubeSheetModel({
-      name: req.body.name,
+      equipmentId: req.body.equipmentId,
+      equipmentName: req.body.equipmentName,
+      clientName: req.body.clientName,
+      clientAddress: req.body.clientAddress,
       type: req.body.type,
-      siteName: req.body.siteName,
+      reactorId: req.body.reactorId,
+      projectStartDate: new Date(req.body.projectStartDate),
+      material: req.body.material,
+      totalNoOfTubes: req.body.totalNoOfTubes,
+      typeOfPhases: req.body.typeOfPhases,
     });
     const savedTubeSheet = await newTubeSheet.save();
     return res.status(201).json({
@@ -46,16 +55,32 @@ router.get("/getSpecificTubeSheet/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/patchTubeSheet/:itemId", verifyToken, async (req, res) => {
+router.patch("/addCameraDetails/:itemId", verifyToken, async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(req.params.itemId);
     if (!selectedTubeSheet)
       return res.status(404).json({ error: "TubeSheet not found" });
-    if (req.body.reactorId) selectedTubeSheet.reactorId = req.body.reactorId;
-    if (req.body.name) selectedTubeSheet.reactorId = req.body.name;
-    if (req.body.status) selectedTubeSheet.status = req.body.status;
-    if (req.body.siteName) selectedTubeSheet.siteName = req.body.siteName;
-    if (req.body.type) selectedTubeSheet.type = req.body.type;
+
+    if (req.body.numberOfCameras)
+      selectedTubeSheet.numberOfCameras = req.body.numberOfCameras;
+    if (req.body.cameras) {
+      selectedTubeSheet.cameras = req.body.cameras;
+      var objectIdsToUpdate = [];
+      const objectIds = selectedTubeSheet.cameras.map(
+        (id) => new mongoose.Types.ObjectId(id)
+      );
+      const result = await cameraModel.updateMany(
+        { _id: { $in: objectIds } },
+        { $set: { isOccupied: true } }
+      );
+
+      console.log(`${result.modifiedCount} documents updated.`);
+    }
+    if (
+      selectedTubeSheet.numberOfCameras != null &&
+      selectedTubeSheet.cameras != null
+    )
+      selectedTubeSheet.status = "CAMERA_CONFIGURED";
     await selectedTubeSheet.save();
     return res.status(200).json({
       Success: true,
@@ -79,5 +104,31 @@ router.delete("/deleteTubeSheet/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+
+router.patch(
+  "/patchTubeSheetDetails/:itemId",
+  verifyToken,
+  async (req, res) => {
+    try {
+      const selectedTubeSheet = await tubeSheetModel.findById(
+        req.params.itemId
+      );
+      if (!selectedTubeSheet)
+        return res.status(404).json({ error: "TubeSheet not found" });
+
+      if (req.body.reactorId) {
+        selectedTubeSheet.reactorId = req.body.reactorId;
+        selectedTubeSheet.status = "REACTOR_CREATED";
+      }
+      await selectedTubeSheet.save();
+      return res.status(200).json({
+        Success: true,
+        data: selectedTubeSheet,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+);
 
 module.exports = router;
