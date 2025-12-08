@@ -56,7 +56,9 @@ router.patch("/updateSurvey/:id", async (req, res) => {
 
 router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await surveyReactorModel.findOne(req.params.itemId);
+    const selectedReactor = await surveyReactorModel.findById(
+      req.params.itemId
+    );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     return res.status(200).json({
