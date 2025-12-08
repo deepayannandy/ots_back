@@ -9,12 +9,11 @@ const surveyReactorSchema = new mongoos.Schema(
     status: {
       type: String,
       required: false,
-      enum: ["INITIATED", "ONGOING", "DONE"],
+      enum: ["INITIATED", "ONGOING", "Completed"],
     },
     surveyType: {
       type: String,
       required: false,
-      enum: ["SOD", "WD"],
     },
     reactorId: {
       type: String,
