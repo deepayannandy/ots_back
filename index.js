@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 
 const health = require("./routes/healthCheck");
 const auth = require("./routes/authentication");
