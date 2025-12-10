@@ -6,10 +6,6 @@ const tubeSheetSchema = new mongoos.Schema(
       type: String,
       required: true,
     },
-    equipmentName: {
-      type: String,
-      required: true,
-    },
     type: {
       type: String,
       required: true,

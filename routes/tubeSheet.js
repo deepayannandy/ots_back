@@ -11,7 +11,6 @@ router.post("/createTubeSheet", verifyToken, async (req, res) => {
   try {
     const newTubeSheet = new tubeSheetModel({
       equipmentId: req.body.equipmentId,
-      equipmentName: req.body.equipmentName,
       clientName: req.body.clientName,
       clientAddress: req.body.clientAddress,
       type: req.body.type,
@@ -120,6 +119,22 @@ router.patch(
         selectedTubeSheet.reactorId = req.body.reactorId;
         selectedTubeSheet.status = "REACTOR_CREATED";
       }
+      if (req.body.clientName) {
+        selectedTubeSheet.clientName = req.body.clientName;
+      }
+      if (req.body.clientAddress) {
+        selectedTubeSheet.clientAddress = req.body.clientAddress;
+      }
+      if (req.body.reactorId) {
+        selectedTubeSheet.reactorId = req.body.reactorId;
+      }
+      if (req.body.projectStartDate) {
+        selectedTubeSheet.projectStartDate = req.body.projectStartDate;
+      }
+      if (req.body.typeOfPhases) {
+        selectedTubeSheet.typeOfPhases = req.body.typeOfPhases;
+      }
+
       await selectedTubeSheet.save();
       return res.status(200).json({
         Success: true,
