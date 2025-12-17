@@ -16,7 +16,7 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
       tubeSheetId: req.body.tubeSheetId,
       status: "INITIATED",
       surveyType: req.body.surveyType,
-      reactorId: selectedReactor.reactorId,
+      reactorId: selectedReactor.equipmentId,
     });
     const savedSurveyReactor = await newSurveyReactor.save();
     return res.status(201).json({
