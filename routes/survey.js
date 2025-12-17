@@ -33,23 +33,25 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
 
 router.patch("/updateSurvey/:id", async (req, res) => {
   try {
-    const selectedSurveyReactor = await surveyReactorModel.findOne({
-      tubeSheetId: req.params.id,
-    });
-    console.log(selectedSurveyReactor);
+    const selectedSurveyReactor = await surveyReactorModel
+      .find({
+        tubeSheetId: req.params.id,
+      })
+      .sort({ _id: -1 })
+      .limit(1);
+    console.log(selectedSurveyReactor[0]);
     if (!selectedSurveyReactor)
       return res.status(404).json({ error: "Reactor not found" });
-    console.log(selectedSurveyReactor);
     if (req.body.detection != null) {
       const data = req.body.detection;
       data.timeStamp = new Date();
       data.tubeId = parseInt(data.tubeId) - 1;
-      selectedSurveyReactor.data.push(data);
+      selectedSurveyReactor[0].data.push(data);
       console.log(data);
       console.log(selectedSurveyReactor);
     }
 
-    const savedReactor = await selectedSurveyReactor.save();
+    const savedReactor = await selectedSurveyReactor[0].save();
     return res.status(200).json({
       Success: true,
       message: "Reactor Updated",
