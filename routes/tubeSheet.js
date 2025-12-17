@@ -70,7 +70,12 @@ router.patch("/addCameraDetails/:itemId", verifyToken, async (req, res) => {
       );
       const result = await cameraModel.updateMany(
         { _id: { $in: objectIds } },
-        { $set: { isOccupied: true, reactorId: req.params.itemId } }
+        {
+          $set: {
+            isOccupied: true,
+            reactorId: selectedTubeSheet.reactorId
+          }
+        }
       );
 
       console.log(`${result.modifiedCount} documents updated.`);
