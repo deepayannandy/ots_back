@@ -9,14 +9,14 @@ const surveyReactorModel = require("../models/surveyReactor");
 
 router.post("/createSurveyReactor", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await reactorModel.findById(req.body.reactorId);
-    if (!selectedReactor)
+    const selectedTubeSheet = await tubeSheetModel.findById(req.body.reactorId);
+    if (!selectedTubeSheet)
       return res.status(404).json({ error: "Reactor not found" });
     const newSurveyReactor = new surveyReactorModel({
       tubeSheetId: req.body.tubeSheetId,
       status: "INITIATED",
       surveyType: req.body.surveyType,
-      reactorId: selectedReactor.equipmentId,
+      reactorId: selectedTubeSheet.equipmentId,
     });
     const savedSurveyReactor = await newSurveyReactor.save();
     return res.status(201).json({
