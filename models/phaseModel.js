@@ -6,6 +6,11 @@ const phaseSchema = new mongoos.Schema(
       type: String,
       required: false,
     },
+    isVisible: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     configs: {
       colorA: {
         type: String,

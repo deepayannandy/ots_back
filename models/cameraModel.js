@@ -19,6 +19,14 @@ const cameraSchema = new mongoos.Schema(
       required: true,
       default: false,
     },
+    reactorId: {
+      type: String,
+      required: false,
+    },
+    status: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
