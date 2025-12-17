@@ -34,7 +34,7 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
 router.patch("/updateSurvey/:id", async (req, res) => {
   try {
     const selectedSurveyReactor = await surveyReactorModel.findOne({
-      reactorId: req.params.id,
+      tubeSheetId: req.params.id,
     });
     console.log(selectedSurveyReactor);
     if (!selectedSurveyReactor)
