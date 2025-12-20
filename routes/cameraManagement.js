@@ -44,5 +44,20 @@ router.get("/getAvailableCameras", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+router.patch("/updateCamera/:itemId", verifyToken, async (req, res) => {
+  try {
+    const selectedCamera = await cameraModel.findById(req.params.itemId);
+    if (req.body.status != null) {
+      selectedCamera.status = req.body.status;
+    }
+    const savedCamera = await selectedCamera.save();
+    return res.status(200).json({
+      Success: true,
+      data: savedCamera,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 
 module.exports = router;
