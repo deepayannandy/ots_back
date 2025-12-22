@@ -25,6 +25,14 @@ const surveyReactorSchema = new mongoos.Schema(
           type: Number,
           required: false,
         },
+        tubeIdAsperLayout: {
+          type: String,
+          required: false,
+        },
+        activity: {
+          type: String,
+          required: false,
+        },
         color: {
           type: String,
           required: false,
@@ -36,6 +44,15 @@ const surveyReactorSchema = new mongoos.Schema(
         isDetected: {
           type: Boolean,
           required: false,
+        },
+        isDuplicate: {
+          type: Boolean,
+          required: false,
+        },
+        face: {
+          type: String,
+          required: false,
+          enum: ["front", "back"],
         },
       },
     ],

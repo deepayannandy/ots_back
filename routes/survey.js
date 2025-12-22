@@ -39,14 +39,31 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       })
       .sort({ _id: -1 })
       .limit(1);
-    console.log(selectedSurveyReactor[0]);
     if (!selectedSurveyReactor)
+      return res.status(404).json({ error: "Survey Reactor not found" });
+    const selectedReactor = await reactorModel.findById(
+      selectedSurveyReactor[0].reactorId
+    );
+    if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
+    console.log(selectedReactor);
     if (req.body.detection != null) {
       const data = req.body.detection;
+      const isExisting = selectedSurveyReactor[0].data.find(
+        (detection) => detection.tubeId === parseInt(data.tubeId) - 1
+      );
+      if (isExisting) data.isDuplicate = true;
+      data.tubeIdAsperLayout =
+        selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+      data.activity = `Detected in ${data.face} face`;
       data.timeStamp = new Date();
       data.tubeId = parseInt(data.tubeId) - 1;
-      selectedSurveyReactor[0].data.push(data);
+      if (
+        selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING" &&
+        !isExisting
+      )
+        selectedSurveyReactor[0].data.push(data);
+
       console.log(data);
       console.log(selectedSurveyReactor);
     }
