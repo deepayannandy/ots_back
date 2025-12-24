@@ -54,7 +54,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       );
       if (isExisting) {
         data.isDuplicate = true;
-        selectedSurveyReactor.repeat = selectedSurveyReactor.repeat + 1;
+        selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
       }
       data.tubeIdAsperLayout =
         selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
@@ -102,6 +102,22 @@ router.patch("/resetAll", async (req, res) => {
     return res.status(200).json({
       Success: true,
       data: selectedReactor[0],
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/stopSurvey/:id", async (req, res) => {
+  try {
+    const selectedReactor = await surveyReactorModel.findOne(req.params.id);
+    if (!selectedReactor)
+      return res.status(404).json({ error: "Reactor not found" });
+    selectedReactor.status = "Completed";
+    await selectedReactor.save();
+    return res.status(200).json({
+      Success: true,
+      data: selectedReactor,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
