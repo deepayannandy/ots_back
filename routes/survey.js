@@ -114,6 +114,7 @@ router.post("/stopSurvey/:id", async (req, res) => {
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     selectedReactor.status = "Completed";
+    selectedReactor.endTimeStamp = new Date();
     await selectedReactor.save();
     return res.status(200).json({
       Success: true,

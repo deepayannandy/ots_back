@@ -24,7 +24,10 @@ const surveyReactorSchema = new mongoos.Schema(
       required: false,
       default: 0,
     },
-
+    endTimeStamp: {
+      type: Date,
+      required: false,
+    },
     data: [
       {
         tubeId: {
