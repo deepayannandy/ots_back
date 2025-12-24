@@ -110,7 +110,7 @@ router.patch("/resetAll", async (req, res) => {
 
 router.post("/stopSurvey/:id", async (req, res) => {
   try {
-    const selectedReactor = await surveyReactorModel.findOne(req.params.id);
+    const selectedReactor = await surveyReactorModel.findById(req.params.id);
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     selectedReactor.status = "Completed";
