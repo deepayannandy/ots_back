@@ -19,6 +19,11 @@ const surveyReactorSchema = new mongoos.Schema(
       type: String,
       required: false,
     },
+    repeat: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     data: [
       {
         tubeId: {

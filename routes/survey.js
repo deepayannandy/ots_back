@@ -52,18 +52,16 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       const isExisting = selectedSurveyReactor[0].data.find(
         (detection) => detection.tubeId === parseInt(data.tubeId) - 1
       );
-      if (isExisting) data.isDuplicate = true;
+      if (isExisting) {
+        data.isDuplicate = true;
+        selectedSurveyReactor.repeat = selectedSurveyReactor.repeat + 1;
+      }
       data.tubeIdAsperLayout =
         selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
       data.activity = `Detected in ${data.face} face`;
       data.timeStamp = new Date();
       data.tubeId = parseInt(data.tubeId) - 1;
-      if (
-        selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING" &&
-        !isExisting
-      )
-        selectedSurveyReactor[0].data.push(data);
-
+      selectedSurveyReactor[0].data.push(data);
       console.log(data);
       console.log(selectedSurveyReactor);
     }
