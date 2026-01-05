@@ -2,7 +2,11 @@ const mongoos = require("mongoose");
 
 const surveyReactorSchema = new mongoos.Schema(
   {
-    tubeSheetId: {
+    tubeSheet: {
+      type: mongoos.Schema.Types.ObjectId,
+      ref: "TubeSheet",
+    },
+    equipmentId: {
       type: String,
       required: false,
     },

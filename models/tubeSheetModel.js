@@ -76,4 +76,4 @@ const tubeSheetSchema = new mongoos.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoos.model("tubeSheet", tubeSheetSchema);
+module.exports = mongoos.model("TubeSheet", tubeSheetSchema);

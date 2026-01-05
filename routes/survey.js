@@ -15,7 +15,8 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
     if (!selectedTubeSheet)
       return res.status(404).json({ error: "Reactor not found" });
     const newSurveyReactor = new surveyReactorModel({
-      tubeSheetId: selectedTubeSheet.equipmentId,
+      tubeSheet: selectedTubeSheet._id,
+      equipmentId: selectedTubeSheet.equipmentId,
       status: "INITIATED",
       surveyType: req.body.surveyType,
       reactorId: req.body.reactorId,
@@ -35,7 +36,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
   try {
     const selectedSurveyReactor = await surveyReactorModel
       .find({
-        tubeSheetId: req.params.id,
+        equipmentId: req.params.id,
       })
       .sort({ _id: -1 })
       .limit(1);
@@ -58,7 +59,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       }
       data.tubeIdAsperLayout =
         selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
-      data.activity = `Detected in ${data.face} face`;
+      data.activity = `Detected in ${data.face} view`;
       data.timeStamp = new Date();
       data.tubeId = parseInt(data.tubeId) - 1;
       selectedSurveyReactor[0].data.push(data);
@@ -108,6 +109,43 @@ router.patch("/resetAll", async (req, res) => {
   }
 });
 
+router.post("/stopSurvey/:id", async (req, res) => {
+  try {
+    const selectedReactor = await surveyReactorModel.findById(req.params.id);
+    if (!selectedReactor)
+      return res.status(404).json({ error: "Reactor not found" });
+    selectedReactor.status = "Completed";
+    selectedReactor.endTimeStamp = new Date();
+    await selectedReactor.save();
+    return res.status(200).json({
+      Success: true,
+      data: selectedReactor,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+router.get("/getAllSurvey", async (req, res) => {
+  try {
+    const selectedReactors = await surveyReactorModel
+      .find({
+        status: "Completed",
+      })
+      .populate({
+        path: "tubeSheet",
+        options: { strictPopulate: false },
+      });
+
+    if (!selectedReactors)
+      return res.status(404).json({ error: "No historical data found!" });
+    return res.status(200).json({
+      Success: true,
+      data: selectedReactors,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 router.post("/stopSurvey/:id", async (req, res) => {
   try {
     const selectedReactor = await surveyReactorModel.findById(req.params.id);
