@@ -72,6 +72,15 @@ const tubeSheetSchema = new mongoos.Schema(
       type: Array,
       required: false,
     },
+    isUnderSurvey: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    surveyId: {
+      type: mongoos.Schema.Types.ObjectId,
+      ref: "surveyReactor",
+    },
   },
   { timestamps: true }
 );

@@ -22,6 +22,9 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
       reactorId: req.body.reactorId,
     });
     const savedSurveyReactor = await newSurveyReactor.save();
+    selectedTubeSheet.surveyId = savedSurveyReactor._id;
+    selectedTubeSheet.isUnderSurvey = true;
+    await selectedTubeSheet.save();
     return res.status(201).json({
       Success: true,
       message: "Survey Reactor added",
@@ -112,11 +115,20 @@ router.patch("/resetAll", async (req, res) => {
 router.post("/stopSurvey/:id", async (req, res) => {
   try {
     const selectedReactor = await surveyReactorModel.findById(req.params.id);
+
     if (!selectedReactor)
-      return res.status(404).json({ error: "Reactor not found" });
+      return res.status(404).json({ error: "Survey not found" });
+    const selectedTubeSheet = await tubeSheetModel.findById(
+      selectedReactor.tubeSheet
+    );
+    if (!selectedTubeSheet)
+      return res.status(404).json({ error: "TubeSheet not found" });
     selectedReactor.status = "Completed";
     selectedReactor.endTimeStamp = new Date();
+    selectedTubeSheet.isUnderSurvey = false;
+    selectedTubeSheet.surveyId = null;
     await selectedReactor.save();
+    await selectedTubeSheet.save();
     return res.status(200).json({
       Success: true,
       data: selectedReactor,
