@@ -32,6 +32,23 @@ const surveyReactorSchema = new mongoos.Schema(
       type: Date,
       required: false,
     },
+    comments: [
+      {
+        tubeIdAsperLayout: {
+          type: String,
+          required: false,
+        },
+        comment: {
+          type: String,
+          required: false,
+        },
+        timeStamp: {
+          type: Date,
+          required: false,
+        },
+      },
+    ],
+
     data: [
       {
         tubeId: {

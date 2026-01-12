@@ -82,15 +82,44 @@ router.patch("/updateSurvey/:id", async (req, res) => {
 });
 
 router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
+  const interval = 60 * 60 * 1000; // 60 minutes in milliseconds
   try {
     const selectedReactor = await surveyReactorModel.findById(
       req.params.itemId
     );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
+    // console.log(
+    //   selectedReactor.createdAt,
+    //   selectedReactor.endTimeStamp,
+    // );
+    const progress = [];
+    if (
+      (selectedReactor.endTimeStamp - selectedReactor.createdAt) / 60000 <
+      60
+    ) {
+      console.log("Survey finish within an hour");
+      progress.push({
+        time: selectedReactor.endTimeStamp,
+        tubes: selectedReactor.data.length,
+      });
+    } else {
+      progress.push({
+        time: new Date(selectedReactor.createdAt.getTime() + interval * 1),
+        tubes: 4,
+      });
+      progress.push({
+        time: new Date(selectedReactor.createdAt.getTime() + interval * 2),
+        tubes: 7,
+      });
+      progress.push({
+        time: new Date(selectedReactor.createdAt.getTime() + interval * 3),
+        tubes: 1,
+      });
+    }
     return res.status(200).json({
       Success: true,
-      data: selectedReactor,
+      data: { ...selectedReactor.toObject(), progress },
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
@@ -130,9 +159,31 @@ router.post("/stopSurvey/:id", async (req, res) => {
     await selectedReactor.save();
     await selectedTubeSheet.save();
     return res.status(200).json({
-      Success: true,
+      success: true,
       data: selectedReactor,
     });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+router.post("/addComment/:surveyId", async (req, res) => {
+  const selectedSurveyReactor = await surveyReactorModel.findById(
+    req.params.surveyId
+  );
+  if (!selectedSurveyReactor)
+    return res.status(404).json({
+      success: false,
+      error: "Survey not found!",
+    });
+  try {
+    comment = {
+      tubeIdAsperLayout: req.body.tubeIdAsperLayout,
+      comment: req.body.comment,
+      timeStamp: new Date(),
+    };
+    selectedSurveyReactor.comments.push(comment);
+    const updatedSurveyData = await selectedSurveyReactor.save();
+    return res.status(201).json({ success: true, data: updatedSurveyData });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }

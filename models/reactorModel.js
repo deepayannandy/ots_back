@@ -54,6 +54,12 @@ const reactorSchema = new mongoos.Schema(
         required: true,
         enum: [30, 45, 60, 90],
       },
+      positions: {
+        scale: { type: Number, required: false },
+        tx: { type: Number, required: false },
+        ty: { type: Number, required: false },
+        rotation: { type: Number, required: false },
+      },
     },
     tubes: [
       {
