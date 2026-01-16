@@ -31,4 +31,17 @@ router.post("/createCompany", upload.single("logo"), async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+router.get("/getCompanyDetails", async (req, res) => {
+  try {
+    const companyData = await companyModel.find().sort({ createdAt: -1 });
+    if (!companyData)
+      return res
+        .status(404)
+        .json({ success: false, message: "No Company details available" });
+
+    return res.status(200).json({ Success: true, data: companyData[0] });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 module.exports = router;
