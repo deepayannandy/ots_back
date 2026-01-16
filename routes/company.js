@@ -2,20 +2,26 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const upload = require("../utils/multerFileUploader");
 
 const userModel = require("../models/userModel");
 const companyModel = require("../models/constantModel");
 
-router.post("/createCompany", verifyToken, async (req, res) => {
-  const loginUser = await userModel.findById(req.tokendata.id);
-  if (!loginUser) return res.status(401).json({ error: "User not found" });
-  if (loginUser.role != "superAdmin")
-    return res.status(403).json({ error: "User not have proper access" });
+router.post("/createCompany", upload.single("logo"), async (req, res) => {
+  if (!req.file)
+    return res
+      .status(500)
+      .json({ success: false, error: "Files Upload Failed" });
+
+  const paths = `/public/uploads/${req.file.filename}`;
   try {
     const newCompany = new companyModel({
       companyName: req.body.companyName,
       email: req.body.email,
       address: req.body.address,
+      numberOfLayouts: req.body.numberOfLayouts,
+      logo: paths,
+      endDate: req.body.endDate,
     });
     const savedCompany = await newCompany.save();
     return res

@@ -14,6 +14,18 @@ const companySchema = new mongoos.Schema(
       type: String,
       required: true,
     },
+    numberOfLayouts: {
+      type: Number,
+      required: true,
+    },
+    logo: {
+      type: String,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );
