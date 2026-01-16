@@ -34,7 +34,7 @@ router.post("/createCompany", upload.single("logo"), async (req, res) => {
 router.get("/getCompanyDetails", async (req, res) => {
   try {
     const companyData = await companyModel.find().sort({ createdAt: -1 });
-    if (!companyData)
+    if (companyData.length < 1)
       return res
         .status(404)
         .json({ success: false, message: "No Company details available" });
