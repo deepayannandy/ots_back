@@ -7,10 +7,18 @@ const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
 const surveyReactorModel = require("../models/surveyReactor");
 
+function getUniqueTubeCount(tubes) {
+  var count = 0;
+  tubes.map((tube) => {
+    if (tube.isDuplicate != true) count++;
+  });
+  console.log(count);
+  return count;
+}
 router.post("/createSurveyReactor", verifyToken, async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(
-      req.body.tubeSheetId
+      req.body.tubeSheetId,
     );
     if (!selectedTubeSheet)
       return res.status(404).json({ error: "Reactor not found" });
@@ -46,7 +54,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     if (!selectedSurveyReactor)
       return res.status(404).json({ error: "Survey Reactor not found" });
     const selectedReactor = await reactorModel.findById(
-      selectedSurveyReactor[0].reactorId
+      selectedSurveyReactor[0].reactorId,
     );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
@@ -54,7 +62,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     if (req.body.detection != null) {
       const data = req.body.detection;
       const isExisting = selectedSurveyReactor[0].data.find(
-        (detection) => detection.tubeId === parseInt(data.tubeId) - 1
+        (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
       );
       if (isExisting) {
         data.isDuplicate = true;
@@ -85,7 +93,7 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
   const interval = 60 * 60 * 1000; // 60 minutes in milliseconds
   try {
     const selectedReactor = await surveyReactorModel.findById(
-      req.params.itemId
+      req.params.itemId,
     );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
@@ -94,14 +102,13 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
     //   selectedReactor.endTimeStamp,
     // );
     const progress = [];
-    if (
-      (selectedReactor.endTimeStamp - selectedReactor.createdAt) / 60000 <
-      60
-    ) {
-      console.log("Survey finish within an hour");
+    const endtime = selectedReactor.endTimeStamp ?? new Date();
+    // console.log("Time", (endtime - selectedReactor.createdAt) / 60000);
+    if ((endtime - selectedReactor.createdAt) / 60000 < 60) {
+      console.log("Survey time an hour");
       progress.push({
-        time: selectedReactor.endTimeStamp,
-        tubes: selectedReactor.data.length,
+        time: endtime,
+        tubes: getUniqueTubeCount(selectedReactor.data),
       });
     } else {
       progress.push({
@@ -148,7 +155,7 @@ router.post("/stopSurvey/:id", async (req, res) => {
     if (!selectedReactor)
       return res.status(404).json({ error: "Survey not found" });
     const selectedTubeSheet = await tubeSheetModel.findById(
-      selectedReactor.tubeSheet
+      selectedReactor.tubeSheet,
     );
     if (!selectedTubeSheet)
       return res.status(404).json({ error: "TubeSheet not found" });
@@ -168,7 +175,7 @@ router.post("/stopSurvey/:id", async (req, res) => {
 });
 router.post("/addComment/:surveyId", async (req, res) => {
   const selectedSurveyReactor = await surveyReactorModel.findById(
-    req.params.surveyId
+    req.params.surveyId,
   );
   if (!selectedSurveyReactor)
     return res.status(404).json({

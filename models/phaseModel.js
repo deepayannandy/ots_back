@@ -13,40 +13,40 @@ const phaseSchema = new mongoos.Schema(
     },
     configs: {
       colorA: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       colorB: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       colorC: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       colorD: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       baseColor: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       fsdEntry: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       bsd: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
       bsdExit: {
-        type: String,
-        required: false,
+        color: { type: String, required: false },
+        abbreviation: { type: String, required: false },
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoos.model("Phases", phaseSchema);

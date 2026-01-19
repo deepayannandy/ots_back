@@ -5,6 +5,7 @@ const verifyToken = require("../utils/verifyToken");
 const mongoose = require("mongoose");
 
 const tubeSheetModel = require("../models/tubeSheetModel");
+const reactorModel = require("../models/reactorModel");
 const cameraModel = require("../models/cameraModel");
 
 router.post("/createTubeSheet", verifyToken, async (req, res) => {
@@ -66,16 +67,16 @@ router.patch("/addCameraDetails/:itemId", verifyToken, async (req, res) => {
       selectedTubeSheet.cameras = req.body.cameras;
       var objectIdsToUpdate = [];
       const objectIds = selectedTubeSheet.cameras.map(
-        (id) => new mongoose.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id),
       );
       const result = await cameraModel.updateMany(
         { _id: { $in: objectIds } },
         {
           $set: {
             isOccupied: true,
-            reactorId: selectedTubeSheet.reactorId
-          }
-        }
+            reactorId: selectedTubeSheet.reactorId,
+          },
+        },
       );
 
       console.log(`${result.modifiedCount} documents updated.`);
@@ -109,13 +110,63 @@ router.delete("/deleteTubeSheet/:itemId", verifyToken, async (req, res) => {
   }
 });
 
+router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
+  try {
+    const primaryTubeSheet = await tubeSheetModel.findById(
+      req.body.tubeSheetId,
+    );
+    if (!primaryTubeSheet)
+      return res.status(404).json({ error: "Project not available" });
+    const primaryReactor = await reactorModel.findById(
+      primaryTubeSheet.reactorId,
+    );
+    if (!primaryReactor)
+      return res.status(404).json({ error: "Layout not available" });
+    const newTubes = primaryReactor.tubes.map((tube) => {
+      if (tube.property != null) {
+        // console.log(tube);
+        tube.property = null;
+        tube.propertyColor = null;
+        // console.log(tube);
+        return tube;
+      } else return tube;
+    });
+    const newReactor = new reactorModel({
+      config: primaryReactor.config,
+      tubes: newTubes,
+    });
+    const savedReactor = await newReactor.save();
+    const newTubeSheet = new tubeSheetModel({
+      equipmentId: req.body.equipmentId,
+      clientName: req.body.clientName,
+      clientAddress: req.body.clientAddress,
+      type: primaryTubeSheet.type,
+      reactorId: savedReactor._id,
+      projectStartDate: new Date(req.body.projectStartDate),
+      material: primaryTubeSheet.material,
+      totalNoOfTubes: primaryTubeSheet.totalNoOfTubes,
+      typeOfPhases: primaryTubeSheet.typeOfPhases,
+      cameras: primaryTubeSheet.cameras,
+      status: primaryTubeSheet.status,
+    });
+    const savedTubeSheet = await newTubeSheet.save();
+    return res.status(201).json({
+      Success: true,
+      message: "Cloned project added",
+      id: savedTubeSheet._id,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 router.patch(
   "/patchTubeSheetDetails/:itemId",
   verifyToken,
   async (req, res) => {
     try {
       const selectedTubeSheet = await tubeSheetModel.findById(
-        req.params.itemId
+        req.params.itemId,
       );
       if (!selectedTubeSheet)
         return res.status(404).json({ error: "TubeSheet not found" });
@@ -148,7 +199,7 @@ router.patch(
     } catch (e) {
       return res.status(500).json({ error: e.message });
     }
-  }
+  },
 );
 
 module.exports = router;

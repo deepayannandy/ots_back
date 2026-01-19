@@ -28,7 +28,7 @@ const cameraSchema = new mongoos.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoos.model("Camera", cameraSchema);
