@@ -23,6 +23,24 @@ const cameraSchema = new mongoos.Schema(
       type: String,
       required: false,
     },
+    rtspUrl: {
+      type: String,
+      required: false,
+    },
+    controllerIp: {
+      type: String,
+      required: false,
+    },
+    x: {
+      type: Number,
+      required: false,
+      default: 90,
+    },
+    y: {
+      type: Number,
+      required: false,
+      default: 90,
+    },
     status: {
       type: Boolean,
       default: false,
