@@ -113,7 +113,7 @@ function getHourlyTimestamps(startTime, endTime) {
 
   while (current <= end) {
     timestamps.push(current.getTime());
-    current.setHours(current.getHours() + 1);
+    current.setMinutes(current.getMinutes() + 10);
   }
   timestamps.push(endTime.getTime());
   return timestamps;
@@ -134,7 +134,8 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
     const progress = [];
     const endtime = selectedReactor.endTimeStamp ?? new Date();
     // console.log("Time", (endtime - selectedReactor.createdAt) / 60000);
-    if ((endtime - selectedReactor.createdAt) / 60000 < 60) {
+    //change 10 to 60 for 1 hour
+    if ((endtime - selectedReactor.createdAt) / 60000 < 10) {
       console.log("Survey time an hour");
       progress.push({
         time: endtime,
@@ -149,7 +150,10 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         let count = 0;
         selectedReactor.data.forEach((data) => {
           console.log(new Date(element), new Date(data.timeStamp));
-          if (new Date(data.timeStamp).getTime() < element) {
+          if (
+            new Date(data.timeStamp).getTime() < element &&
+            data.isDuplicate != true
+          ) {
             count += 1;
             console.log(">>", data.timeStamp);
           }
