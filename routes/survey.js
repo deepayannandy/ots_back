@@ -88,6 +88,36 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+function getHourlyTimestamps(startTime, endTime) {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw new Error("Invalid start or end time provided");
+  }
+
+  if (start > end) {
+    throw new Error("Start time must be before or equal to end time");
+  }
+
+  const timestamps = [];
+  let current = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate(),
+    start.getHours(),
+    start.getMinutes(),
+    0,
+    0,
+  );
+
+  while (current <= end) {
+    timestamps.push(current.getTime());
+    current.setHours(current.getHours() + 1);
+  }
+  timestamps.push(endTime.getTime());
+  return timestamps;
+}
 
 router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
   const interval = 60 * 60 * 1000; // 60 minutes in milliseconds
@@ -111,17 +141,23 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         tubes: getUniqueTubeCount(selectedReactor.data),
       });
     } else {
-      progress.push({
-        time: new Date(selectedReactor.createdAt.getTime() + interval * 1),
-        tubes: 4,
-      });
-      progress.push({
-        time: new Date(selectedReactor.createdAt.getTime() + interval * 2),
-        tubes: 7,
-      });
-      progress.push({
-        time: new Date(selectedReactor.createdAt.getTime() + interval * 3),
-        tubes: 1,
+      const timeStamps = getHourlyTimestamps(
+        selectedReactor.createdAt,
+        endtime,
+      );
+      timeStamps.forEach((element) => {
+        let count = 0;
+        selectedReactor.data.forEach((data) => {
+          console.log(new Date(element), new Date(data.timeStamp));
+          if (new Date(data.timeStamp).getTime() < element) {
+            count += 1;
+            console.log(">>", data.timeStamp);
+          }
+        });
+        progress.push({
+          time: new Date(element),
+          tubes: count,
+        });
       });
     }
     return res.status(200).json({
