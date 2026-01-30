@@ -14,7 +14,7 @@ const tubeSheetSchema = new mongoos.Schema(
         "BOILER",
         "EOEG_REACTOR",
         "GLYCOL_REACTOR",
-        "AERYLIC_REACTOR",
+        "ACRYLIC_REACTOR",
         "GAS_COOLER",
       ],
     },
@@ -82,7 +82,7 @@ const tubeSheetSchema = new mongoos.Schema(
       ref: "surveyReactor",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoos.model("TubeSheet", tubeSheetSchema);
