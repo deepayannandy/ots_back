@@ -58,26 +58,62 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
-    console.log(selectedReactor);
+    console.log(selectedSurveyReactor);
     if (req.body.detection != null) {
       const data = req.body.detection;
-      const isExisting = selectedSurveyReactor[0].data.find(
-        (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
-      );
-      if (isExisting) {
-        data.isDuplicate = true;
-        selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
+      if (selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING") {
+        console.log(data);
+        const isExisting = selectedSurveyReactor[0].data.find(
+          (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
+        );
+        if (isExisting) {
+          if (data.color == "white") {
+            console.log("Removed the existing list");
+          } else {
+            const isSameExisting = selectedSurveyReactor[0].data.find(
+              (detection) =>
+                detection.tubeId === parseInt(data.tubeId) - 1 &&
+                detection.color === data.color,
+            );
+            if (!isSameExisting) {
+              data.isDuplicate = true;
+              selectedSurveyReactor[0].repeat =
+                selectedSurveyReactor[0].repeat + 1;
+              data.tubeIdAsperLayout =
+                selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+              data.activity = `Color ${data.color} Detected in ${data.face} view`;
+              data.timeStamp = new Date();
+              data.tubeId = parseInt(data.tubeId) - 1;
+              if (data.color != "white")
+                selectedSurveyReactor[0].data.push(data);
+            }
+          }
+        } else {
+          data.tubeIdAsperLayout =
+            selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+          data.activity = `Color ${data.color} Detected in ${data.face} view`;
+          data.timeStamp = new Date();
+          data.tubeId = parseInt(data.tubeId) - 1;
+          if (data.color != "white") selectedSurveyReactor[0].data.push(data);
+        }
+      } else {
+        const isExisting = selectedSurveyReactor[0].data.find(
+          (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
+        );
+        if (isExisting) {
+          data.isDuplicate = true;
+          selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
+        }
+        data.tubeIdAsperLayout =
+          selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+        data.activity = `Detected in ${data.face} view`;
+        data.timeStamp = new Date();
+        data.tubeId = parseInt(data.tubeId) - 1;
+        selectedSurveyReactor[0].data.push(data);
+        // console.log(data);
+        // console.log(selectedSurveyReactor);
       }
-      data.tubeIdAsperLayout =
-        selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
-      data.activity = `Detected in ${data.face} view`;
-      data.timeStamp = new Date();
-      data.tubeId = parseInt(data.tubeId) - 1;
-      selectedSurveyReactor[0].data.push(data);
-      console.log(data);
-      console.log(selectedSurveyReactor);
     }
-
     const savedReactor = await selectedSurveyReactor[0].save();
     return res.status(200).json({
       Success: true,
@@ -127,14 +163,8 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
     );
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
-    // console.log(
-    //   selectedReactor.createdAt,
-    //   selectedReactor.endTimeStamp,
-    // );
     const progress = [];
     const endtime = selectedReactor.endTimeStamp ?? new Date();
-    // console.log("Time", (endtime - selectedReactor.createdAt) / 60000);
-    //change 10 to 60 for 1 hour
     if ((endtime - selectedReactor.createdAt) / 60000 < 10) {
       console.log("Survey time an hour");
       progress.push({
