@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const tubeSheetModel = require("../models/tubeSheetModel");
 const reactorModel = require("../models/reactorModel");
 const cameraModel = require("../models/cameraModel");
+const phaseModel = require("../models/phaseModel");
 
 router.post("/createTubeSheet", verifyToken, async (req, res) => {
   try {
@@ -47,9 +48,17 @@ router.get("/getSpecificTubeSheet/:itemId", verifyToken, async (req, res) => {
     const selectedTubeSheet = await tubeSheetModel.findById(req.params.itemId);
     if (!selectedTubeSheet)
       return res.status(404).json({ error: "TubeSheet not found" });
+    const phasesData = await phaseModel.find(
+      {
+        phaseName: { $in: selectedTubeSheet.typeOfPhases },
+      },
+      { configs: 1, phaseName: 1 },
+    );
+    // console.log(selectedTubeSheet.typeOfPhases);
     return res.status(200).json({
       Success: true,
       data: selectedTubeSheet,
+      phasesData,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });

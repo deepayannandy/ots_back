@@ -191,6 +191,7 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         progress.push({
           time: new Date(element),
           tubes: count,
+          idDay: true,
         });
       });
     }
