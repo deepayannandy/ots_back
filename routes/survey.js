@@ -68,7 +68,15 @@ router.patch("/updateSurvey/:id", async (req, res) => {
         );
         if (isExisting) {
           if (data.color == "white") {
-            console.log("Removed the existing list");
+            data.isDuplicate = true;
+            selectedSurveyReactor[0].repeat =
+              selectedSurveyReactor[0].repeat + 1;
+            data.tubeIdAsperLayout =
+              selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+            data.activity = `Color ${data.color} Detected in ${data.face} view`;
+            data.timeStamp = new Date();
+            data.tubeId = parseInt(data.tubeId) - 1;
+            selectedSurveyReactor[0].data.push(data);
           } else {
             const isSameExisting = selectedSurveyReactor[0].data.find(
               (detection) =>
