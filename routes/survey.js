@@ -204,9 +204,12 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         });
       });
     }
+    const data = selectedReactor.toObject();
+    data.progress = progress;
+    data.data = data.data.reverse();
     return res.status(200).json({
       Success: true,
-      data: { ...selectedReactor.toObject(), progress },
+      data: data,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
