@@ -81,7 +81,7 @@ const tubeSheetSchema = new mongoos.Schema(
       required: false,
     },
     timeZoneOffset: {
-      type: number,
+      type: Number,
       required: false,
     },
     isUnderSurvey: {
