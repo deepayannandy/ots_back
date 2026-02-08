@@ -72,6 +72,18 @@ const tubeSheetSchema = new mongoos.Schema(
       type: Array,
       required: false,
     },
+    dayStart: {
+      type: String,
+      required: false,
+    },
+    dayEnd: {
+      type: String,
+      required: false,
+    },
+    timeZoneOffset: {
+      type: number,
+      required: false,
+    },
     isUnderSurvey: {
       type: Boolean,
       required: false,

@@ -21,6 +21,9 @@ router.post("/createTubeSheet", verifyToken, async (req, res) => {
       material: req.body.material,
       totalNoOfTubes: req.body.totalNoOfTubes,
       typeOfPhases: req.body.typeOfPhases,
+      dayEnd: req.body.dayEnd,
+      dayStart: req.body.dayStart,
+      timeZoneOffset: req.body.timeZoneOffset,
     });
     const savedTubeSheet = await newTubeSheet.save();
     return res.status(201).json({
@@ -199,7 +202,15 @@ router.patch(
       if (req.body.typeOfPhases) {
         selectedTubeSheet.typeOfPhases = req.body.typeOfPhases;
       }
-
+      if (req.body.dayEnd) {
+        selectedTubeSheet.dayEnd = req.body.dayEnd;
+      }
+      if (req.body.dayStart) {
+        selectedTubeSheet.dayStart = req.body.dayStart;
+      }
+      if (req.body.timeZoneOffset) {
+        selectedTubeSheet.timeZoneOffset = req.body.timeZoneOffset;
+      }
       await selectedTubeSheet.save();
       return res.status(200).json({
         Success: true,
