@@ -11,6 +11,12 @@ const phaseModel = require("../models/phaseModel");
 
 router.post("/createTubeSheet", verifyToken, async (req, res) => {
   try {
+    const existingTubeSheet = await tubeSheetModel.findOne({
+      equipmentId: req.body.equipmentId,
+    });
+    if (existingTubeSheet)
+      return res.status(409).json({ error: "This equipment already exist " });
+
     const newTubeSheet = new tubeSheetModel({
       equipmentId: req.body.equipmentId,
       clientName: req.body.clientName,
@@ -132,6 +138,11 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
     const primaryReactor = await reactorModel.findById(
       primaryTubeSheet.reactorId,
     );
+    const existingTubeSheet = await tubeSheetModel.findOne({
+      equipmentId: req.body.equipmentId,
+    });
+    if (existingTubeSheet)
+      return res.status(409).json({ error: "This equipment already exist " });
     if (!primaryReactor)
       return res.status(404).json({ error: "Layout not available" });
     const newTubes = primaryReactor.tubes.map((tube) => {
@@ -143,6 +154,7 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
         return tube;
       } else return tube;
     });
+
     const newReactor = new reactorModel({
       config: primaryReactor.config,
       tubes: newTubes,
