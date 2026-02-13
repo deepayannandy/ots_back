@@ -47,7 +47,7 @@ const reactorSchema = new mongoos.Schema(
       lattice: {
         type: String,
         required: true,
-        enum: ["triangular", "rectangular"],
+        enum: ["triangular", "rectangular", "square"],
       },
       angle: {
         type: Number,
@@ -104,7 +104,7 @@ const reactorSchema = new mongoos.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoos.model("reactor", reactorSchema);
