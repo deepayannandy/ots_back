@@ -126,7 +126,7 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     return res.status(200).json({
       Success: true,
       message: "Reactor Updated",
-      data: savedReactor,
+      data: savedReactor._id,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
