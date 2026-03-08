@@ -22,6 +22,7 @@ const auth = require("./routes/authentication");
 const company = require("./routes/company");
 const reactor = require("./routes/reactor");
 const tubeSheet = require("./routes/tubeSheet");
+const dashboard = require("./routes/dashbaord");
 const camera = require("./routes/cameraManagement");
 const surveyReactor = require("./routes/survey");
 const phase = require("./routes/phases");
@@ -34,6 +35,7 @@ app.use("/api/v2/tubeSheet", tubeSheet);
 app.use("/api/v2/survey", surveyReactor);
 app.use("/api/v2/camera", camera);
 app.use("/api/v2/phase", phase);
+app.use("/api/v2/dashboard", dashboard);
 
 app.listen(PORT, () => {
   console.log("Http Server is listning!");

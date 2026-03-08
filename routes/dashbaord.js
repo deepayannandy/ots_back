@@ -5,9 +5,9 @@ const verifyToken = require("../utils/verifyToken");
 
 router.get("/getDashboardData", verifyToken, async (req, res) => {
   try {
-    const tubeSheetCount = await tubeSheetModel.countDocuments();
-    const reactorCount = await reactorModel.countDocuments();
-    const cameraCount = await cameraModel.countDocuments();
+    // const tubeSheetCount = await tubeSheetModel.countDocuments();
+    // const reactorCount = await reactorModel.countDocuments();
+    // const cameraCount = await cameraModel.countDocuments();
     return res.status(200).json({
       Success: true,
       data: [
@@ -18,7 +18,7 @@ router.get("/getDashboardData", verifyToken, async (req, res) => {
           clientAddress: "Houston TX",
           projectStartTime: new Date("2026-02-03T06:30:00.000+00:00"),
           lastUpdatedTime: new Date("2026-02-03T12:10:00.000+00:00"),
-          endTime: NA,
+          endTime: null,
           woId: "PO/2526/12112",
           phases: [
             {
@@ -40,7 +40,7 @@ router.get("/getDashboardData", verifyToken, async (req, res) => {
             {
               phaseName: "Idle Time",
               phaseStartTime: new Date("2026-02-03T10:51:00.000+00:00"),
-              lastUpdatedTime: NA,
+              lastUpdatedTime: null,
               endTime: new Date("2026-02-03T11:29:00.000+00:00"),
             },
             {
@@ -48,16 +48,16 @@ router.get("/getDashboardData", verifyToken, async (req, res) => {
               progress: 44,
               phaseStartTime: new Date("2026-02-03T11:30:00.000+00:00"),
               lastUpdatedTime: new Date("2026-02-03T12:10:00.000+00:00"),
-              endTime: NA,
+              endTime: null,
               surveyID: "69a725f32f458d4e8bd1fc3d",
             },
             {
               phaseName: "Color Cap",
-              progress: NA,
-              phaseStartTime: NA,
-              lastUpdatedTime: NA,
-              endTime: NA,
-              surveyID: NA,
+              progress: null,
+              phaseStartTime: null,
+              lastUpdatedTime: null,
+              endTime: null,
+              surveyID: null,
             },
           ],
         },
