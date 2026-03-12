@@ -59,6 +59,9 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     console.log(selectedSurveyReactor);
+    if(selectedSurveyReactor[0].updatedAt- new Date() < 10000){
+      return res.status(409).json({ error: "Please wait for 10 seconds before updating again" });
+    }
     if (req.body.detection != null) {
       const data = req.body.detection;
       if (selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING") {
