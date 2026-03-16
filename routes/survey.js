@@ -279,10 +279,14 @@ router.post("/stopSurvey/:id", async (req, res) => {
       workOrderId: selectedTubeSheet.workOrder,
     });
     if (linkedWO) {
-      linkedWO.phaseData.forEach((phase) => {
+      linkedWO.phaseData.forEach((phase, index) => {
         if (phase.phaseName === selectedReactor.surveyType) {
           phase.phaseStatus = "Completed";
           phase.phaseEndTimeStamp = new Date();
+          if (index + 1 == linkedWO.phaseData.length) {
+            linkedWO.status = "Completed";
+            linkedWO.endTimeStamp = new Date();
+          }
         }
       });
       await linkedWO.save();
@@ -338,20 +342,20 @@ router.get("/getAllSurvey", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.post("/stopSurvey/:id", async (req, res) => {
-  try {
-    const selectedReactor = await surveyReactorModel.findById(req.params.id);
-    if (!selectedReactor)
-      return res.status(404).json({ error: "Reactor not found" });
-    selectedReactor.status = "Completed";
-    selectedReactor.endTimeStamp = new Date();
-    await selectedReactor.save();
-    return res.status(200).json({
-      Success: true,
-      data: selectedReactor,
-    });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
-});
+// router.post("/stopSurvey/:id", async (req, res) => {
+//   try {
+//     const selectedReactor = await surveyReactorModel.findById(req.params.id);
+//     if (!selectedReactor)
+//       return res.status(404).json({ error: "Reactor not found" });
+//     selectedReactor.status = "Completed";
+//     selectedReactor.endTimeStamp = new Date();
+//     await selectedReactor.save();
+//     return res.status(200).json({
+//       Success: true,
+//       data: selectedReactor,
+//     });
+//   } catch (e) {
+//     return res.status(500).json({ error: e.message });
+//   }
+// });
 module.exports = router;
