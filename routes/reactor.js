@@ -5,6 +5,7 @@ const verifyToken = require("../utils/verifyToken");
 
 const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
+const workOrderModel = require("../models/workOrderModel");
 
 router.post("/createReactor", verifyToken, async (req, res) => {
   try {
@@ -13,6 +14,13 @@ router.post("/createReactor", verifyToken, async (req, res) => {
       tubes: req.body.tubes,
     });
     const savedReactor = await newReactor.save();
+    const likedWO = await workOrderModel.findOne({
+      workOrderId: selectedTubeSheet.workOrder,
+    });
+    if (likedWO) {
+      likedWO.reactorId = savedSurveyReactor._id;
+      await likedWO.save();
+    }
     return res
       .status(201)
       .json({ Success: true, message: "Reactor added", id: savedReactor._id });

@@ -37,8 +37,8 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
       workOrderId: selectedTubeSheet.workOrder,
     });
     if (likedWO) {
-      likedWO.reactorId = savedSurveyReactor._id;
-      await likedWO.save();
+      // likedWO.reactorId = savedSurveyReactor._id;
+      // await likedWO.save();
     }
     await selectedTubeSheet.save();
     return res.status(201).json({
