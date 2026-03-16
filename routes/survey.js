@@ -80,11 +80,11 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       return res.status(404).json({ error: "Reactor not found" });
     console.log(selectedSurveyReactor);
     console.log(new Date() - selectedSurveyReactor[0].updatedAt);
-    if (new Date() - selectedSurveyReactor[0].updatedAt < 10000) {
-      console.log("Please wait for 10 seconds before updating again");
+    if (new Date() - selectedSurveyReactor[0].updatedAt < 20000) {
+      console.log("Please wait for 20 seconds before updating again");
       return res
         .status(409)
-        .json({ error: "Please wait for 10 seconds before updating again" });
+        .json({ error: "Please wait for 20 seconds before updating again" });
     }
     if (req.body.detection != null) {
       const data = req.body.detection;
