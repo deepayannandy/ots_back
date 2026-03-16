@@ -38,6 +38,10 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
       workOrderId: selectedTubeSheet.workOrder,
     });
     if (linkedWO) {
+      linkedWO.status = "OnGoing";
+      linkedWO.startTimeStamp
+        ? linkedWO.startTimeStamp
+        : (linkedWO.startTimeStamp = new Date());
       linkedWO.phaseData.forEach((phase) => {
         if (phase.phaseName === req.body.surveyType) {
           phase.phaseStatus = "OnGoing";
