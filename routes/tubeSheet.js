@@ -8,6 +8,7 @@ const tubeSheetModel = require("../models/tubeSheetModel");
 const reactorModel = require("../models/reactorModel");
 const cameraModel = require("../models/cameraModel");
 const phaseModel = require("../models/phaseModel");
+const workOrderModel = require("../models/workOrderModel");
 
 router.post("/createTubeSheet", verifyToken, async (req, res) => {
   try {
@@ -19,6 +20,7 @@ router.post("/createTubeSheet", verifyToken, async (req, res) => {
 
     const newTubeSheet = new tubeSheetModel({
       equipmentId: req.body.equipmentId,
+      workOrder: req.body.workOrder,
       clientName: req.body.clientName,
       clientAddress: req.body.clientAddress,
       type: req.body.type,
@@ -32,10 +34,24 @@ router.post("/createTubeSheet", verifyToken, async (req, res) => {
       timeZoneOffset: req.body.timeZoneOffset,
     });
     const savedTubeSheet = await newTubeSheet.save();
+    const phases = [];
+    for (let i = 0; i < req.body.typeOfPhases.length; i++) {
+      phases.push({
+        phaseName: req.body.typeOfPhases[i],
+      });
+    }
+    const newWO = new workOrderModel({
+      tubeSheet: savedTubeSheet._id,
+      equipmentId: req.body.equipmentId,
+      workOrderId: req.body.workOrder,
+      phaseData: phases,
+    });
+    const savedWO = await newWO.save();
     return res.status(201).json({
       Success: true,
       message: "TubeSheet added",
       id: savedTubeSheet._id,
+      wo_id: savedWO._id,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });

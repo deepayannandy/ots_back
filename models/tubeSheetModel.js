@@ -18,6 +18,10 @@ const tubeSheetSchema = new mongoos.Schema(
         "GAS_COOLER",
       ],
     },
+    workOrder: {
+      type: String,
+      required: true,
+    },
     clientName: {
       type: String,
       required: true,

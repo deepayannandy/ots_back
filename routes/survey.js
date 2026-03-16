@@ -6,6 +6,7 @@ const verifyToken = require("../utils/verifyToken");
 const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
 const surveyReactorModel = require("../models/surveyReactor");
+const workOrderModel = require("../models/workOrderModel");
 
 function getUniqueTubeCount(tubes) {
   var count = 0;
@@ -32,6 +33,13 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
     const savedSurveyReactor = await newSurveyReactor.save();
     selectedTubeSheet.surveyId = savedSurveyReactor._id;
     selectedTubeSheet.isUnderSurvey = true;
+    const likedWO = await workOrderModel.findOne({
+      workOrderId: selectedTubeSheet.workOrder,
+    });
+    if (likedWO) {
+      likedWO.reactorId = savedSurveyReactor._id;
+      await likedWO.save();
+    }
     await selectedTubeSheet.save();
     return res.status(201).json({
       Success: true,
@@ -59,10 +67,12 @@ router.patch("/updateSurvey/:id", async (req, res) => {
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     console.log(selectedSurveyReactor);
-     console.log(new Date()-selectedSurveyReactor[0].updatedAt);
-    if(new Date()-selectedSurveyReactor[0].updatedAt < 10000){
+    console.log(new Date() - selectedSurveyReactor[0].updatedAt);
+    if (new Date() - selectedSurveyReactor[0].updatedAt < 10000) {
       console.log("Please wait for 10 seconds before updating again");
-      return res.status(409).json({ error: "Please wait for 10 seconds before updating again" });
+      return res
+        .status(409)
+        .json({ error: "Please wait for 10 seconds before updating again" });
     }
     if (req.body.detection != null) {
       const data = req.body.detection;
