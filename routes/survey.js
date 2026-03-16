@@ -276,7 +276,7 @@ router.post("/stopSurvey/:id", async (req, res) => {
     });
     if (linkedWO) {
       linkedWO.phaseData.forEach((phase) => {
-        if (phase.phaseName === req.body.surveyType) {
+        if (phase.phaseName === selectedReactor.surveyType) {
           phase.phaseStatus = "Completed";
           phase.phaseEndTimeStamp = new Date();
         }
