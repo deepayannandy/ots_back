@@ -7,6 +7,7 @@ const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
 const surveyReactorModel = require("../models/surveyReactor");
 const workOrderModel = require("../models/workOrderModel");
+const { link } = require("joi");
 
 function getUniqueTubeCount(tubes) {
   var count = 0;
@@ -33,13 +34,20 @@ router.post("/createSurveyReactor", verifyToken, async (req, res) => {
     const savedSurveyReactor = await newSurveyReactor.save();
     selectedTubeSheet.surveyId = savedSurveyReactor._id;
     selectedTubeSheet.isUnderSurvey = true;
-    const likedWO = await workOrderModel.findOne({
+    const linkedWO = await workOrderModel.findOne({
       workOrderId: selectedTubeSheet.workOrder,
     });
-    if (likedWO) {
-      // likedWO.reactorId = savedSurveyReactor._id;
-      // await likedWO.save();
+    if (linkedWO) {
+      linkedWO.phaseData.forEach((phase) => {
+        if (phase.phaseName === req.body.surveyType) {
+          phase.phaseStatus = "OnGoing";
+          phase.phaseStartTimeStamp = new Date();
+          phase.phaseData = savedSurveyReactor._id;
+        }
+      });
+      await linkedWO.save();
     }
+
     await selectedTubeSheet.save();
     return res.status(201).json({
       Success: true,
@@ -263,6 +271,18 @@ router.post("/stopSurvey/:id", async (req, res) => {
     selectedTubeSheet.surveyId = null;
     await selectedReactor.save();
     await selectedTubeSheet.save();
+    const linkedWO = await workOrderModel.findOne({
+      workOrderId: selectedTubeSheet.workOrder,
+    });
+    if (linkedWO) {
+      linkedWO.phaseData.forEach((phase) => {
+        if (phase.phaseName === req.body.surveyType) {
+          phase.phaseStatus = "Completed";
+          phase.phaseEndTimeStamp = new Date();
+        }
+      });
+      await linkedWO.save();
+    }
     return res.status(200).json({
       success: true,
       data: selectedReactor,
