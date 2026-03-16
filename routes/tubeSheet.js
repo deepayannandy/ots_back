@@ -218,7 +218,7 @@ router.patch(
           workOrderId: selectedTubeSheet.workOrder,
         });
         if (likedWO) {
-          likedWO.reactorId = savedSurveyReactor._id;
+          likedWO.reactorId = req.body.reactorId;
           await likedWO.save();
         }
       }
