@@ -214,6 +214,13 @@ router.patch(
       if (req.body.reactorId) {
         selectedTubeSheet.reactorId = req.body.reactorId;
         selectedTubeSheet.status = "REACTOR_CREATED";
+        const likedWO = await workOrderModel.findOne({
+          workOrderId: selectedTubeSheet.workOrder,
+        });
+        if (likedWO) {
+          likedWO.reactorId = savedSurveyReactor._id;
+          await likedWO.save();
+        }
       }
       if (req.body.clientName) {
         selectedTubeSheet.clientName = req.body.clientName;
