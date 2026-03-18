@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
-
+const mqttService = require("../utils/mqtt");
 const cameraModel = require("../models/cameraModel");
 
 router.post("/createCamera", verifyToken, async (req, res) => {
@@ -57,7 +57,12 @@ router.post("/setCameraAngle/:itemId", verifyToken, async (req, res) => {
     if (req.body.x != null && req.body.y != null) {
       selectedCamera.x = req.body.x;
       selectedCamera.y = req.body.y;
+      mqttService.publish("motorControl/commands", {
+        x: req.body.x,
+        y: req.body.y,
+      });
     }
+
     //Add the controller logic
     const savedCamera = await selectedCamera.save();
     return res.status(200).json({

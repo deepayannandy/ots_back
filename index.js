@@ -8,6 +8,9 @@ mongoose.set("strictQuery", false);
 mongoose.connect(process.env.DATABASE_URL);
 const db = mongoose.connection;
 
+const mqttService = require("./utils/mqtt");
+mqttService.connect(process.env.MQTT_BROKER_URL);
+
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database!"));
 const PORT = process.env.PORT || 5000;

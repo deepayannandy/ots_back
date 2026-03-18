@@ -17,6 +17,7 @@
     "joi": "^17.6.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.1",
+    "mqtt": "^5.15.0",
     "multer": "^2.0.2"
   },
   "devDependencies": {
