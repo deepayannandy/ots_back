@@ -10,7 +10,7 @@ router.post("/searchActions", async (req, res) => {
     const actions = req.body;
     console.log("Getting actions");
     console.log(actions);
-    const reactor = await reactorModel.findById(actions.reactorId);
+    const reactor = await reactorModel.findById("69b2c2fc60eef8fc472bc5e5");
     if (!reactor) {
       return res.status(404).json({ error: "Reactor not found" });
     }
