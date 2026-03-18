@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
 
-router.get("/searchActions", verifyToken, async (req, res) => {
+router.post("/searchActions", async (req, res) => {
   try {
     const actions = req.body;
     console.log("Getting actions");
