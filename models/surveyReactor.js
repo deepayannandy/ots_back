@@ -86,13 +86,50 @@ const surveyReactorSchema = new mongoos.Schema(
         },
       },
     ],
+    errorLogs: [
+      {
+        tubeId: {
+          type: Number,
+          required: false,
+        },
+        tubeIdAsperLayout: {
+          type: String,
+          required: false,
+        },
+        activity: {
+          type: String,
+          required: false,
+        },
+        color: {
+          type: String,
+          required: false,
+        },
+        timeStamp: {
+          type: Date,
+          required: false,
+        },
+        isDetected: {
+          type: Boolean,
+          required: false,
+        },
+        isDuplicate: {
+          type: Boolean,
+          required: false,
+        },
+        face: {
+          type: String,
+          required: false,
+          enum: ["front", "back"],
+        },
+      },
+    ],
     isVisible: {
       type: Boolean,
       required: false,
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoos.model("surveyReactor", surveyReactorSchema);

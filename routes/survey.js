@@ -80,12 +80,6 @@ router.patch("/updateSurvey/:id", async (req, res) => {
       return res.status(404).json({ error: "Reactor not found" });
     console.log(selectedSurveyReactor);
     console.log(new Date() - selectedSurveyReactor[0].updatedAt);
-    // if (new Date() - selectedSurveyReactor[0].updatedAt < 20000) {
-    //   console.log("Please wait for 20 seconds before updating again");
-    //   return res
-    //     .status(409)
-    //     .json({ error: "Please wait for 20 seconds before updating again" });
-    // }
     if (req.body.detection != null) {
       const data = req.body.detection;
       if (selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING") {
@@ -132,21 +126,35 @@ router.patch("/updateSurvey/:id", async (req, res) => {
           if (data.color != "white") selectedSurveyReactor[0].data.push(data);
         }
       } else {
-        const isExisting = selectedSurveyReactor[0].data.find(
-          (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
-        );
-        if (isExisting) {
-          data.isDuplicate = true;
-          selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
+        if (new Date() - selectedSurveyReactor[0].updatedAt < 10000) {
+          console.log("Please wait for 10 seconds before updating again");
+          return res.status(409).json({
+            error: "Please wait for 10 seconds before updating again",
+          });
         }
+        const isExisting = selectedSurveyReactor[0].data.filter(
+          (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
+        ).length;
         data.tubeIdAsperLayout =
           selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
         data.activity = `Detected in ${data.face} view`;
         data.timeStamp = new Date();
         data.tubeId = parseInt(data.tubeId) - 1;
-        selectedSurveyReactor[0].data.push(data);
-        // console.log(data);
-        // console.log(selectedSurveyReactor);
+        if (isExisting == 1) {
+          data.isDuplicate = true;
+          data.color = "blue";
+          selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
+          selectedSurveyReactor[0].data.push(data);
+        } else if (isExisting >= 2) {
+          console.log("Duplicate detection for tube id ", data.tubeId);
+          data.isDuplicate = true;
+          data.color = "red";
+          data.activity = `Detected in ${data.face} multiple times`;
+          // selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
+          selectedSurveyReactor[0].errorLogs.push(data);
+        } else {
+          selectedSurveyReactor[0].data.push(data);
+        }
       }
     }
     const savedReactor = await selectedSurveyReactor[0].save();
