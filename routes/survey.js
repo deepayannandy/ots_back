@@ -8,7 +8,6 @@ const tubeSheetModel = require("../models/tubeSheetModel");
 const surveyReactorModel = require("../models/surveyReactor");
 const workOrderModel = require("../models/workOrderModel");
 const { link } = require("joi");
-const validateDayNight = require("../utils/validateDayNight");
 
 function getUniqueTubeCount(tubes) {
   var count = 0;
@@ -18,6 +17,19 @@ function getUniqueTubeCount(tubes) {
   console.log(count);
   return count;
 }
+
+function validateDayNight(date) {
+  const now = new Date(date);
+  const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const startMinutes = 8 * 60 + 0; // 08:00
+  const endMinutes = 18 * 60 + 0; // 18:00
+
+  return (
+    currentTimeInMinutes >= startMinutes && currentTimeInMinutes < endMinutes
+  );
+}
+
 router.post("/createSurveyReactor", verifyToken, async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(
@@ -214,7 +226,7 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
       progress.push({
         time: endtime,
         tubes: getUniqueTubeCount(selectedReactor.data),
-        isDay: true,
+        isDay: validateDayNight(new Date(element)),
       });
     } else {
       const timeStamps = getHourlyTimestamps(
@@ -233,10 +245,11 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
             console.log(">>", data.timeStamp);
           }
         });
+
         progress.push({
           time: new Date(element),
           tubes: count,
-          isDay: true,
+          isDay: validateDayNight(new Date(element)),
         });
       });
     }

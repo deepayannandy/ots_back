@@ -1,5 +1,5 @@
-function isSystemEnabled(date) {
-  const now = new Date();
+function validateDayNight(date) {
+  const now = new Date(date);
   const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
 
   const startMinutes = 8 * 60 + 0; // 08:00
@@ -10,4 +10,4 @@ function isSystemEnabled(date) {
   );
 }
 
-module.exports = new isSystemEnabled();
+module.exports = new validateDayNight();
