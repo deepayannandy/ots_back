@@ -214,7 +214,7 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
       progress.push({
         time: endtime,
         tubes: getUniqueTubeCount(selectedReactor.data),
-        isDay: validateDayNight(new Date(element)),
+        isDay: validateDayNight.isSystemEnabled(new Date(element)),
       });
     } else {
       const timeStamps = getHourlyTimestamps(
@@ -236,7 +236,7 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         progress.push({
           time: new Date(element),
           tubes: count,
-          isDay: validateDayNight(new Date(element)),
+          isDay: validateDayNight.isSystemEnabled(new Date(element)),
         });
       });
     }
