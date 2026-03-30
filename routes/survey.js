@@ -139,12 +139,12 @@ router.patch("/updateSurvey/:id", async (req, res) => {
           if (data.color != "white") selectedSurveyReactor[0].data.push(data);
         }
       } else {
-        if (new Date() - selectedSurveyReactor[0].updatedAt < 0) {
-          console.log("Please wait for 10 seconds before updating again");
-          return res.status(409).json({
-            error: "Please wait for 10 seconds before updating again",
-          });
-        }
+        // if (new Date() - selectedSurveyReactor[0].updatedAt < 0) {
+        //   console.log("Please wait for 10 seconds before updating again");
+        //   return res.status(409).json({
+        //     error: "Please wait for 10 seconds before updating again",
+        //   });
+        // }
         const isExisting = selectedSurveyReactor[0].data.filter(
           (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
         ).length;
