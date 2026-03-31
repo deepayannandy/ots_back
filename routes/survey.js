@@ -205,7 +205,7 @@ router.patch(
       // console.log(selectedSurveyReactor);
       // console.log(new Date() - selectedSurveyReactor[0].updatedAt);
       if (req.body != null) {
-        const data = req.body;
+        const data = JSON.parse(JSON.stringify(req.body));
         data.evidenceImage = paths;
         console.log("Data received: ", data);
         if (selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING") {
@@ -273,8 +273,14 @@ router.patch(
             });
           }
           const isExisting = selectedSurveyReactor[0].data.filter(
-            (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
+            (detection) => parseInt(detection.tubeId) === parseInt(data.tubeId),
           ).length;
+          console.log(
+            "Existing count for tube id ",
+            data.tubeId,
+            " is ",
+            isExisting,
+          );
           if (isExisting == 1) {
             data.isDuplicate = true;
             data.color = "blue";
@@ -300,6 +306,7 @@ router.patch(
         data: savedReactor._id,
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ error: e.message });
     }
   },
