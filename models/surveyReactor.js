@@ -84,6 +84,10 @@ const surveyReactorSchema = new mongoos.Schema(
           required: false,
           enum: ["front", "back"],
         },
+        evidenceImage: {
+          type: String,
+          required: false,
+        },
       },
     ],
     errorLogs: [
@@ -120,6 +124,10 @@ const surveyReactorSchema = new mongoos.Schema(
           type: String,
           required: false,
           enum: ["front", "back"],
+        },
+        evidenceImage: {
+          type: String,
+          required: false,
         },
       },
     ],
