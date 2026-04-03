@@ -257,7 +257,18 @@ router.patch(
           data.activity = `Detected in ${data.face} view`;
           data.timeStamp = new Date();
           data.tubeId = parseInt(data.tubeId) - 1;
-          if (new Date() - selectedSurveyReactor[0].updatedAt < 10000) {
+          const lastEntryTime =
+            selectedSurveyReactor[0].data.length > 0
+              ? new Date(
+                  selectedSurveyReactor[0].data[
+                    selectedSurveyReactor[0].data.length - 1
+                  ].timeStamp,
+                )
+              : null;
+          if (
+            new Date() - selectedSurveyReactor[0].updatedAt < 10000 ||
+            (lastEntryTime && new Date() - lastEntryTime < 10000)
+          ) {
             console.log(
               "Please wait for 10 seconds before updating again",
               data.tubeId,
