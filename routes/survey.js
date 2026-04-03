@@ -387,7 +387,6 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
             console.log(">>", data.timeStamp);
           }
         });
-
         progress.push({
           time: new Date(element),
           tubes: count,
@@ -395,6 +394,19 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         });
       });
     }
+    selectedReactor.data.forEach((data) => {
+      console.log(
+        data.isDuplicate != true,
+        new Date() - new Date(data.timeStamp) > 60000,
+      );
+      if (
+        data.isDuplicate != true &&
+        new Date() - new Date(data.timeStamp) > 60000
+      ) {
+        data.color = "green";
+      }
+    });
+    await selectedReactor.save();
     const data = selectedReactor.toObject();
     data.progress = progress;
     // data.data = data.data.reverse();
