@@ -208,7 +208,34 @@ router.patch(
         const data = JSON.parse(JSON.stringify(req.body));
         data.evidenceImage = paths;
         console.log("Data received: ", data);
-        if (selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING") {
+        if (selectedSurveyReactor[0].surveyType == "HIGH_PRESSURE_CLEANING") {
+          // console.log(data);
+          const isExisting = selectedSurveyReactor[0].data.find(
+            (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
+          );
+          if (isExisting) {
+            data.isDuplicate = true;
+            selectedSurveyReactor[0].repeat =
+              selectedSurveyReactor[0].repeat + 1;
+            data.tubeIdAsperLayout =
+              selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+            data.activity = `High Pressure Cleaning Detected in ${data.face} view`;
+            data.timeStamp = new Date();
+            data.tubeId = parseInt(data.tubeId) - 1;
+            data.color = "blue";
+            selectedSurveyReactor[0].data.push(data);
+          } else {
+            data.tubeIdAsperLayout =
+              selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
+            data.activity = `High Pressure Cleaning Detected in ${data.face} view`;
+            data.timeStamp = new Date();
+            data.tubeId = parseInt(data.tubeId) - 1;
+            data.color = "green";
+            selectedSurveyReactor[0].data.push(data);
+          }
+        } else if (
+          selectedSurveyReactor[0].surveyType == "COLOR_CAP_TRACKING"
+        ) {
           // console.log(data);
           const isExisting = selectedSurveyReactor[0].data.find(
             (detection) => detection.tubeId === parseInt(data.tubeId) - 1,
