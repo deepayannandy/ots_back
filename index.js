@@ -17,7 +17,22 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use("/public/uploads", express.static(process.env.PublicFolderPath));
-app.use(cors());
+// Configure CORS to allow the frontend origin, credentials, and common headers
+const corsOptions = {
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Accept",
+    "Origin",
+    "X-Requested-With",
+  ],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+// Ensure preflight requests are quickly handled
+app.options("*", cors(corsOptions));
 app.use(express.json({ limit: "200mb" }));
 
 const health = require("./routes/healthCheck");
