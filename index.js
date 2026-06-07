@@ -30,6 +30,7 @@ const camera = require("./routes/cameraManagement");
 const surveyReactor = require("./routes/survey");
 const phase = require("./routes/phases");
 const action = require("./routes/actions");
+const metadata = require("./routes/metadataHandeler");
 
 app.use("/api/v2/healthCheck", health);
 app.use("/api/v2/auth", auth);
@@ -41,6 +42,7 @@ app.use("/api/v2/camera", camera);
 app.use("/api/v2/phase", phase);
 app.use("/api/v2/dashboard", dashboard);
 app.use("/api/v2/actions", action);
+app.use("/api/v2/metadata", metadata);
 
 app.listen(PORT, () => {
   console.log("Http Server is listning!");
