@@ -16,9 +16,11 @@ db.once("open", () => console.log("Connected to Database!"));
 const PORT = process.env.PORT || 5000;
 
 const app = express();
-app.use("/public/uploads", express.static(process.env.PublicFolderPath));
+
 app.use(cors());
 app.options("*", cors());
+
+app.use("/public/uploads", express.static(process.env.PublicFolderPath));
 app.use(express.json({ limit: "200mb" }));
 
 const health = require("./routes/healthCheck");
