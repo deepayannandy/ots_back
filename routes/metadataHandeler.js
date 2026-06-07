@@ -33,7 +33,7 @@ router.get("/getAll", async (req, res) => {
     const metadataList = await Metadata.find();
     return res.status(200).json({
       Success: true,
-      data: metadataList,
+      data: metadataList.reverse(),
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
