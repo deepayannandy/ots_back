@@ -19,19 +19,8 @@ const app = express();
 app.use("/public/uploads", express.static(process.env.PublicFolderPath));
 // Configure CORS to allow the frontend origin, credentials, and common headers
 const corsOptions = {
-  // If CLIENT_ORIGIN is set, restrict to those origins (comma-separated).
-  // Otherwise echo the request origin (allow all origins in dev).
-  origin: process.env.CLIENT_ORIGIN
-    ? (origin, callback) => {
-        const allowed = process.env.CLIENT_ORIGIN.split(",").map((s) =>
-          s.trim(),
-        );
-        if (!origin) return callback(null, true);
-        return allowed.indexOf(origin) !== -1
-          ? callback(null, true)
-          : callback(new Error("Not allowed by CORS"));
-      }
-    : true,
+  // Allow CORS from any origin (wildcard). Note: when using wildcard, credentials are disabled.
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
     "Content-Type",
@@ -40,10 +29,9 @@ const corsOptions = {
     "Origin",
     "X-Requested-With",
   ],
-  credentials: true,
+  credentials: false,
 };
 app.use(cors(corsOptions));
-// Ensure preflight requests are quickly handled
 app.options("*", cors(corsOptions));
 app.use(express.json({ limit: "200mb" }));
 
