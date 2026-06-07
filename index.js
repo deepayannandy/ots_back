@@ -19,7 +19,19 @@ const app = express();
 app.use("/public/uploads", express.static(process.env.PublicFolderPath));
 // Configure CORS to allow the frontend origin, credentials, and common headers
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+  // If CLIENT_ORIGIN is set, restrict to those origins (comma-separated).
+  // Otherwise echo the request origin (allow all origins in dev).
+  origin: process.env.CLIENT_ORIGIN
+    ? (origin, callback) => {
+        const allowed = process.env.CLIENT_ORIGIN.split(",").map((s) =>
+          s.trim(),
+        );
+        if (!origin) return callback(null, true);
+        return allowed.indexOf(origin) !== -1
+          ? callback(null, true)
+          : callback(new Error("Not allowed by CORS"));
+      }
+    : true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
     "Content-Type",
