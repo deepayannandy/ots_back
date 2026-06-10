@@ -542,7 +542,7 @@ router.get("/getAllSurvey", async (req, res) => {
       return res.status(404).json({ error: "No historical data found!" });
     return res.status(200).json({
       Success: true,
-      data: selectedReactors,
+      data: selectedReactors.reverse(),
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
