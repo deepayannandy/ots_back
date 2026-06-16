@@ -261,6 +261,12 @@ router.patch(
       if (req.body.timeZoneOffset) {
         selectedTubeSheet.timeZoneOffset = req.body.timeZoneOffset;
       }
+      if (req.body.material) {
+        selectedTubeSheet.material = req.body.material;
+      }
+      if (req.body.totalNoOfTubes) {
+        selectedTubeSheet.totalNoOfTubes = req.body.totalNoOfTubes;
+      }
       await selectedTubeSheet.save();
       return res.status(200).json({
         Success: true,
