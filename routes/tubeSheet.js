@@ -188,8 +188,23 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
       typeOfPhases: primaryTubeSheet.typeOfPhases,
       cameras: primaryTubeSheet.cameras,
       status: primaryTubeSheet.status,
+      workOrder: req.body.workOrder,
     });
+
     const savedTubeSheet = await newTubeSheet.save();
+    const phases = [];
+    for (let i = 0; i < primaryTubeSheet.typeOfPhases.length; i++) {
+      phases.push({
+        phaseName: primaryTubeSheet.typeOfPhases[i],
+      });
+    }
+    const newWO = new workOrderModel({
+      tubeSheet: savedTubeSheet._id,
+      equipmentId: req.body.equipmentId,
+      workOrderId: req.body.workOrder,
+      phaseData: phases,
+    });
+    const savedWO = await newWO.save();
     return res.status(201).json({
       Success: true,
       message: "Cloned project added",
