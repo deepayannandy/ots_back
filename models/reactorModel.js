@@ -3,6 +3,10 @@ const mongoos = require("mongoose");
 const reactorSchema = new mongoos.Schema(
   {
     config: {
+      totalPieSlice: {
+        type: Number,
+        required: false,
+      },
       shape: {
         type: String,
         required: true,
@@ -91,6 +95,10 @@ const reactorSchema = new mongoos.Schema(
         propertyColor: {
           type: String,
           required: false,
+        },
+        pieSlice: {
+          type: Number,
+          require: false,
         },
         comment: {
           type: String,
