@@ -431,7 +431,8 @@ router.get("/getSurveyData/:itemId", verifyToken, async (req, res) => {
         );
         if (
           data.isDuplicate != true &&
-          new Date() - new Date(data.timeStamp) > 60000
+          new Date() - new Date(data.timeStamp) > 60000 &&
+          data.color != "white"
         ) {
           data.color = "green";
         }
