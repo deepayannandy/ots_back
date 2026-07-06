@@ -313,7 +313,9 @@ router.patch(
             });
           }
           const isExisting = selectedSurveyReactor[0].data.filter(
-            (detection) => parseInt(detection.tubeId) === parseInt(data.tubeId),
+            (detection) =>
+              parseInt(detection.tubeId) === parseInt(data.tubeId) &&
+              detection.color != "white",
           ).length;
           console.log(
             "Existing count for tube id ",
