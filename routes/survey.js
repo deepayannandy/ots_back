@@ -155,7 +155,9 @@ router.patch("/updateSurvey/:id", async (req, res) => {
         data.activity = `Detected in ${data.face} view`;
         data.timeStamp = new Date();
         data.tubeId = parseInt(data.tubeId) - 1;
-        if (isExisting == 1) {
+        if (data.color == "white") {
+          selectedSurveyReactor[0].data.push(data);
+        } else if (isExisting == 1) {
           data.isDuplicate = true;
           data.color = "blue";
           selectedSurveyReactor[0].repeat = selectedSurveyReactor[0].repeat + 1;
