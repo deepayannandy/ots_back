@@ -294,9 +294,11 @@ router.patch(
                   ].timeStamp,
                 )
               : null;
+
+          //change the timin
           if (
-            new Date() - selectedSurveyReactor[0].updatedAt < 5000 ||
-            (lastEntryTime && new Date() - lastEntryTime < 5000)
+            new Date() - selectedSurveyReactor[0].updatedAt < 50 ||
+            (lastEntryTime && new Date() - lastEntryTime < 50)
           ) {
             console.log(
               "Please wait for 5 seconds before updating again",
