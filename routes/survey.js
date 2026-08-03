@@ -280,7 +280,9 @@ router.patch(
             data.tubeId = parseInt(data.tubeId) - 1;
             if (data.color != "white") selectedSurveyReactor[0].data.push(data);
           }
-        } else {
+        }
+        // All the other phases
+        else {
           data.tubeIdAsperLayout =
             selectedReactor.tubes[parseInt(data.tubeId) - 1].id;
           data.activity = `Detected in ${data.face} view`;
@@ -325,7 +327,25 @@ router.patch(
             " is ",
             isExisting,
           );
-          if (isExisting == 1) {
+          console.log(data);
+          if (data.isExit != null && data.isExit == "true" && isExisting == 1) {
+            console.log("&&& called");
+            const existingIndex = selectedSurveyReactor[0].data.findIndex(
+              (detection) =>
+                parseInt(detection.tubeId) === parseInt(data.tubeId) &&
+                detection.color != "white",
+            );
+            if (existingIndex !== -1) {
+              selectedSurveyReactor[0].data[existingIndex].evidenceExitImage =
+                data.evidenceImage;
+              selectedSurveyReactor[0].data[existingIndex].exitTimeStamp =
+                new Date();
+              selectedSurveyReactor[0].data[existingIndex].isExit = true;
+              selectedSurveyReactor[0].data[existingIndex].face = data.face;
+              selectedSurveyReactor[0].markModified("data");
+            }
+          } else if (isExisting == 1) {
+            console.log("&&& called");
             data.isDuplicate = true;
             data.color = "blue";
             selectedSurveyReactor[0].repeat =
@@ -343,6 +363,7 @@ router.patch(
           }
         }
       }
+
       const savedReactor = await selectedSurveyReactor[0].save();
       return res.status(200).json({
         Success: true,

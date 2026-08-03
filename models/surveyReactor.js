@@ -88,6 +88,18 @@ const surveyReactorSchema = new mongoos.Schema(
           type: String,
           required: false,
         },
+        evidenceExitImage: {
+          type: String,
+          required: false,
+        },
+        exitTimeStamp: {
+          type: Date,
+          required: false,
+        },
+        isExit: {
+          type: Boolean,
+          required: false,
+        },
       },
     ],
     errorLogs: [
