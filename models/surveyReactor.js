@@ -152,4 +152,8 @@ const surveyReactorSchema = new mongoos.Schema(
   { timestamps: true },
 );
 
+surveyReactorSchema.index({ status: 1, createdAt: -1 });
+surveyReactorSchema.index({ equipmentId: 1 });
+surveyReactorSchema.index({ surveyType: 1 });
+
 module.exports = mongoos.model("surveyReactor", surveyReactorSchema);

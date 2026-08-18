@@ -576,6 +576,53 @@ router.get("/getAllSurvey", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+router.get("/getAllSurveyPaginated", async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+    const skip = (page - 1) * limit;
+
+    const filter = {
+      status: req.query.status || "Completed",
+    };
+    if (req.query.equipmentId) filter.equipmentId = req.query.equipmentId;
+    if (req.query.surveyType) filter.surveyType = req.query.surveyType;
+    if (req.query.startDate || req.query.endDate) {
+      filter.createdAt = {};
+      if (req.query.startDate)
+        filter.createdAt.$gte = new Date(req.query.startDate);
+      if (req.query.endDate)
+        filter.createdAt.$lte = new Date(req.query.endDate);
+    }
+
+    const [selectedReactors, totalItems] = await Promise.all([
+      surveyReactorModel
+        .find(filter)
+        .select("-data -errorLogs")
+        .populate({
+          path: "tubeSheet",
+          options: { strictPopulate: false },
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      surveyReactorModel.countDocuments(filter),
+    ]);
+
+    return res.status(200).json({
+      Success: true,
+      data: selectedReactors,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.max(Math.ceil(totalItems / limit), 1),
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 // router.post("/stopSurvey/:id", async (req, res) => {
 //   try {
 //     const selectedReactor = await surveyReactorModel.findById(req.params.id);
