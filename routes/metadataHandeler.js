@@ -42,6 +42,20 @@ router.get("/getAll", async (req, res) => {
   }
 });
 
+//Get specific metadata
+router.get("/:name", async (req, res) => {
+  const reactorName = req.params.name;
+  const selectedMetaData = await metadataModel.findOne({
+    name: reactorName,
+  });
+  if (!selectedMetaData)
+    return res
+      .status(404)
+      .json({ error: `No metadata found with name: ${reactorName}` });
+
+  return res.status(200).json({ data: selectedMetaData });
+});
+
 //Multiple field handeler
 const cpUpload = upload.fields([
   { name: "calibrationFile", maxCount: 1 },
