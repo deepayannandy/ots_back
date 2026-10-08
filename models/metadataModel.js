@@ -10,6 +10,14 @@ const metadataSchema = new mongoos.Schema(
       type: String,
       required: true,
     },
+    calibrationFile: {
+      type: String,
+      required: true,
+    },
+    tubeDetectionFile: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );
