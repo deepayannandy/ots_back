@@ -12,11 +12,11 @@ const metadataSchema = new mongoos.Schema(
     },
     calibrationFile: {
       type: String,
-      required: true,
+      required: false,
     },
     tubeDetectionFile: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   { timestamps: true },
