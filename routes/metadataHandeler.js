@@ -6,7 +6,7 @@ const Metadata = require("../models/metadataModel");
 const multer = require("multer");
 const metadataModel = require("../models/metadataModel");
 
-router.post("/upload", upload.single("file"), (req, res) => {
+router.post("/upload", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -16,7 +16,7 @@ router.post("/upload", upload.single("file"), (req, res) => {
       name: req.body.reactorName,
       fileUrl,
     });
-    metadata.save();
+    await metadata.save();
     return res.status(200).json({
       Success: true,
       data: {
