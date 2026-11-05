@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const upload = require("../utils/multerFileUploader");
+const verifyToken = require("../utils/verifyToken");
 const Metadata = require("../models/metadataModel");
 const multer = require("multer");
 const metadataModel = require("../models/metadataModel");
@@ -32,10 +33,26 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
 router.get("/getAll", async (req, res) => {
   try {
-    const metadataList = await Metadata.find();
+    const metadataList = await Metadata.find({ isVisible: { $ne: false } });
     return res.status(200).json({
       Success: true,
       data: metadataList.reverse(),
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+//Soft delete metadata
+router.delete("/deleteMetadata/:itemId", verifyToken, async (req, res) => {
+  try {
+    const selectedMetaData = await metadataModel.findById(req.params.itemId);
+    if (!selectedMetaData)
+      return res.status(404).json({ error: "Metadata not found" });
+    selectedMetaData.isVisible = false;
+    await selectedMetaData.save();
+    return res.status(200).json({
+      Success: true,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
@@ -47,6 +64,7 @@ router.get("/:name", async (req, res) => {
   const reactorName = req.params.name;
   const selectedMetaData = await metadataModel.findOne({
     name: reactorName,
+    isVisible: { $ne: false },
   });
   if (!selectedMetaData)
     return res
@@ -68,6 +86,7 @@ router.post("/calibrationUpload", cpUpload, async (req, res) => {
     const metadataName = req.body.reactorName;
     const selectedMetaData = await metadataModel.findOne({
       name: metadataName,
+      isVisible: { $ne: false },
     });
     if (!selectedMetaData)
       return res
