@@ -23,12 +23,21 @@ router.post("/createReactor", verifyToken, async (req, res) => {
 });
 router.patch("/patchReactor/:itemId", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await reactorModel.findById(req.params.itemId);
-    if (!selectedReactor)
+    // Single atomic update instead of findById + save: avoids hydrating every
+    // tube as a tracked subdocument and diffing the whole array (CPU-bound,
+    // blocks the event loop for large layouts).
+    const update = {};
+    if (req.body.config != null) update.config = req.body.config;
+    if (req.body.tubes != null) update.tubes = req.body.tubes;
+    const savedReactor = await reactorModel
+      .findByIdAndUpdate(
+        req.params.itemId,
+        { $set: update },
+        { new: true, runValidators: true },
+      )
+      .lean();
+    if (!savedReactor)
       return res.status(404).json({ error: "Reactor not found" });
-    if (req.body.config != null) selectedReactor.config = req.body.config;
-    if (req.body.tubes != null) selectedReactor.tubes = req.body.tubes;
-    const savedReactor = await selectedReactor.save();
     return res.status(200).json({
       Success: true,
       message: "Reactor Updated",
@@ -40,7 +49,9 @@ router.patch("/patchReactor/:itemId", verifyToken, async (req, res) => {
 });
 router.get("/getReactorById/:itemId", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await reactorModel.findById(req.params.itemId);
+    const selectedReactor = await reactorModel
+      .findById(req.params.itemId)
+      .lean();
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     return res.status(200).json({
@@ -53,7 +64,7 @@ router.get("/getReactorById/:itemId", verifyToken, async (req, res) => {
 });
 router.delete("/deleteReactor/:itemId", verifyToken, async (req, res) => {
   try {
-    const selectedReactor = await reactorModel.findById(req.params.itemId);
+    const selectedReactor = await reactorModel.exists({ _id: req.params.itemId });
     if (!selectedReactor)
       return res.status(404).json({ error: "Reactor not found" });
     const linkedTubeSheets = await tubeSheetModel.findOne({
@@ -63,8 +74,10 @@ router.delete("/deleteReactor/:itemId", verifyToken, async (req, res) => {
       return res
         .status(400)
         .json({ error: "Reactor is linked with one or more tubeSheets" });
-    selectedReactor.isVisible = false;
-    await selectedReactor.save();
+    await reactorModel.updateOne(
+      { _id: req.params.itemId },
+      { $set: { isVisible: false } },
+    );
     return res.status(200).json({
       Success: true,
     });

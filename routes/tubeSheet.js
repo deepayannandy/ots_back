@@ -151,9 +151,9 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
     );
     if (!primaryTubeSheet)
       return res.status(404).json({ error: "Project not available" });
-    const primaryReactor = await reactorModel.findById(
-      primaryTubeSheet.reactorId,
-    );
+    const primaryReactor = await reactorModel
+      .findById(primaryTubeSheet.reactorId)
+      .lean();
     const existingTubeSheet = await tubeSheetModel.findOne({
       equipmentId: req.body.equipmentId,
     });
@@ -161,15 +161,11 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
       return res.status(409).json({ error: "This equipment already exist " });
     if (!primaryReactor)
       return res.status(404).json({ error: "Layout not available" });
-    const newTubes = primaryReactor.tubes.map((tube) => {
-      if (tube.property != null) {
-        // console.log(tube);
-        tube.property = null;
-        tube.propertyColor = null;
-        // console.log(tube);
-        return tube;
-      } else return tube;
-    });
+    const newTubes = primaryReactor.tubes.map((tube) =>
+      tube.property != null
+        ? { ...tube, property: null, propertyColor: null }
+        : tube,
+    );
 
     const newReactor = new reactorModel({
       config: primaryReactor.config,
