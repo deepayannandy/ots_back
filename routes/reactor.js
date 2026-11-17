@@ -12,6 +12,7 @@ router.post("/createReactor", verifyToken, async (req, res) => {
     const newReactor = new reactorModel({
       config: req.body.config,
       tubes: req.body.tubes,
+      solidHoles: req.body.solidHoles || [],
     });
     const savedReactor = await newReactor.save();
     return res
@@ -29,6 +30,7 @@ router.patch("/patchReactor/:itemId", verifyToken, async (req, res) => {
     const update = {};
     if (req.body.config != null) update.config = req.body.config;
     if (req.body.tubes != null) update.tubes = req.body.tubes;
+    if (req.body.solidHoles != null) update.solidHoles = req.body.solidHoles;
     const savedReactor = await reactorModel
       .findByIdAndUpdate(
         req.params.itemId,

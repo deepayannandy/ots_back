@@ -106,6 +106,18 @@ const reactorSchema = new mongoos.Schema(
         },
       },
     ],
+    // Holes marked SOLID are removed from `tubes` (and rows renumbered). Their
+    // original positions are kept here so they can be restored later.
+    solidHoles: [
+      {
+        _id: false,
+        id: { type: String, required: false },
+        x: { type: Number, required: true },
+        y: { type: Number, required: true },
+        r: { type: Number, required: true },
+        pieSlice: { type: Number, required: false },
+      },
+    ],
     isVisible: {
       type: Boolean,
       required: true,
