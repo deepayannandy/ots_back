@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const guardProtected = require("../utils/guardProtected");
 const mqttService = require("../utils/mqtt");
 const cameraModel = require("../models/cameraModel");
 
@@ -47,7 +48,11 @@ router.get("/getAvailableCameras", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/setCameraAngle/:itemId", verifyToken, async (req, res) => {
+router.post(
+  "/setCameraAngle/:itemId",
+  verifyToken,
+  guardProtected.byCameraParam(),
+  async (req, res) => {
   try {
     const selectedCamera = await cameraModel.findById(req.params.itemId);
     if (!selectedCamera)
@@ -88,7 +93,11 @@ router.get("/getCameraDetails/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/updateCamera/:itemId", verifyToken, async (req, res) => {
+router.patch(
+  "/updateCamera/:itemId",
+  verifyToken,
+  guardProtected.byCameraParam(),
+  async (req, res) => {
   try {
     const selectedCamera = await cameraModel.findById(req.params.itemId);
     if (!selectedCamera)

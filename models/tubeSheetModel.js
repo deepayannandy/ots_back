@@ -88,6 +88,13 @@ const tubeSheetSchema = new mongoos.Schema(
       type: Number,
       required: false,
     },
+    // Set by admins only. When true, guest users can view this project but
+    // cannot update, delete or otherwise modify it (see utils/guardProtected.js).
+    protected: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isUnderSurvey: {
       type: Boolean,
       required: false,

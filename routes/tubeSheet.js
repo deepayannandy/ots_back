@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const verifyAdmin = require("../utils/verifyAdmin");
+const guardProtected = require("../utils/guardProtected");
 const mongoose = require("mongoose");
 
 const tubeSheetModel = require("../models/tubeSheetModel");
@@ -89,7 +91,11 @@ router.get("/getSpecificTubeSheet/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/addCameraDetails/:itemId", verifyToken, async (req, res) => {
+router.patch(
+  "/addCameraDetails/:itemId",
+  verifyToken,
+  guardProtected.byTubeSheetParam(),
+  async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(req.params.itemId);
     if (!selectedTubeSheet)
@@ -129,7 +135,11 @@ router.patch("/addCameraDetails/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.delete("/deleteTubeSheet/:itemId", verifyToken, async (req, res) => {
+router.delete(
+  "/deleteTubeSheet/:itemId",
+  verifyToken,
+  guardProtected.byTubeSheetParam(),
+  async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(req.params.itemId);
     if (!selectedTubeSheet)
@@ -144,7 +154,11 @@ router.delete("/deleteTubeSheet/:itemId", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
+router.post(
+  "/cloneTubeSheet",
+  verifyToken,
+  guardProtected.byTubeSheetBody(),
+  async (req, res) => {
   try {
     const primaryTubeSheet = await tubeSheetModel.findById(
       req.body.tubeSheetId,
@@ -214,6 +228,7 @@ router.post("/cloneTubeSheet", verifyToken, async (req, res) => {
 router.patch(
   "/patchTubeSheetDetails/:itemId",
   verifyToken,
+  guardProtected.byTubeSheetParam(),
   async (req, res) => {
     try {
       const selectedTubeSheet = await tubeSheetModel.findById(
@@ -267,6 +282,40 @@ router.patch(
       return res.status(200).json({
         Success: true,
         data: selectedTubeSheet,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  },
+);
+
+// Admin only: mark a project (tubesheet) as protected or not.
+// Body: { protected: true | false }
+router.patch(
+  "/setProtected/:itemId",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    try {
+      if (typeof req.body.protected !== "boolean")
+        return res
+          .status(400)
+          .json({ error: "`protected` must be true or false" });
+      const updated = await tubeSheetModel
+        .findByIdAndUpdate(
+          req.params.itemId,
+          { $set: { protected: req.body.protected } },
+          { new: true },
+        )
+        .lean();
+      if (!updated)
+        return res.status(404).json({ error: "TubeSheet not found" });
+      return res.status(200).json({
+        Success: true,
+        message: req.body.protected
+          ? "Project marked as protected"
+          : "Project is no longer protected",
+        data: updated,
       });
     } catch (e) {
       return res.status(500).json({ error: e.message });

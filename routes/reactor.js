@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const guardProtected = require("../utils/guardProtected");
 
 const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
@@ -22,7 +23,11 @@ router.post("/createReactor", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.patch("/patchReactor/:itemId", verifyToken, async (req, res) => {
+router.patch(
+  "/patchReactor/:itemId",
+  verifyToken,
+  guardProtected.byReactorParam(),
+  async (req, res) => {
   try {
     // Single atomic update instead of findById + save: avoids hydrating every
     // tube as a tracked subdocument and diffing the whole array (CPU-bound,
@@ -64,7 +69,11 @@ router.get("/getReactorById/:itemId", verifyToken, async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.delete("/deleteReactor/:itemId", verifyToken, async (req, res) => {
+router.delete(
+  "/deleteReactor/:itemId",
+  verifyToken,
+  guardProtected.byReactorParam(),
+  async (req, res) => {
   try {
     const selectedReactor = await reactorModel.exists({ _id: req.params.itemId });
     if (!selectedReactor)

@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../utils/verifyToken");
+const guardProtected = require("../utils/guardProtected");
 
 const reactorModel = require("../models/reactorModel");
 const tubeSheetModel = require("../models/tubeSheetModel");
@@ -32,7 +33,11 @@ function validateDayNight(date) {
   );
 }
 
-router.post("/createSurveyReactor", verifyToken, async (req, res) => {
+router.post(
+  "/createSurveyReactor",
+  verifyToken,
+  guardProtected.byTubeSheetBody(),
+  async (req, res) => {
   try {
     const selectedTubeSheet = await tubeSheetModel.findById(
       req.body.tubeSheetId,
@@ -492,7 +497,11 @@ router.patch("/resetAll", async (req, res) => {
   }
 });
 
-router.post("/stopSurvey/:id", async (req, res) => {
+router.post(
+  "/stopSurvey/:id",
+  verifyToken,
+  guardProtected.bySurveyParam("id"),
+  async (req, res) => {
   try {
     const selectedReactor = await surveyReactorModel.findById(req.params.id);
 
@@ -533,7 +542,11 @@ router.post("/stopSurvey/:id", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-router.post("/addComment/:surveyId", async (req, res) => {
+router.post(
+  "/addComment/:surveyId",
+  verifyToken,
+  guardProtected.bySurveyParam("surveyId"),
+  async (req, res) => {
   const selectedSurveyReactor = await surveyReactorModel.findById(
     req.params.surveyId,
   );
